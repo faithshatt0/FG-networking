@@ -5,12 +5,13 @@ import thread
 global firstClient
 global secondClient
 
-#recvMsg = dict()
+recvMsg = 0
 firstMsg = ""
 secMsg = ""
 
 def recvClient(client,addr):
 	msg = client.recv(1024)
+	recvMsg++
 	if len(recvMsg) == 0: 
 		firstMsg = msg
 		firstClient = client
@@ -27,7 +28,7 @@ print 'Server ready...'
 socket.bind(('', 12000))        # Bind to the port
 socket.listen(1)                 # Now wait for client connection.
 
-while len(recvMsg) < 2:
+while recvMsg < 2:
    client, addr = socket.accept()     # Establish connection with client.
    thread = Thread(target = recvClient, args = (client,addr))
    thread.start()
