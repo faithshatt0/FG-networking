@@ -11,7 +11,7 @@ secMsg = ""
 
 def recvClient(client,addr):
 	msg = client.recv(1024)
-	recvMsg++
+	recvMsg = recvMsg + 1
 	if len(recvMsg) == 0: 
 		firstMsg = msg
 		firstClient = client
