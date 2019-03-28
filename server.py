@@ -1,24 +1,25 @@
 
 from socket import *       
-import thread
+from threading import Thread
 
 global firstClient
 global secondClient
+global firstMsg
+global secMsg
+global recvMsg
 
 recvMsg = 0
-firstMsg = ""
-secMsg = ""
 
-def recvClient(client,addr):
+def recvClient(client,addr,recvMsg):
 	msg = client.recv(1024)
-	recvMsg = recvMsg + 1
 	if recvMsg == 0: 
 		firstMsg = msg
 		firstClient = client
 	else:
 		secMsg = msg
 		secondClient = client
-	print addr, ' >> ', msg
+	print msg
+        recvMsg = recvMsg + 1
 
 socket = socket(AF_INET, SOCK_STREAM)        # Create a socket object
 
@@ -29,7 +30,7 @@ socket.listen(1)                 # Now wait for client connection.
 
 while recvMsg < 2:
    client, addr = socket.accept()     # Establish connection with client.
-   thread = Thread(target = recvClient, args = (client,addr))
+   thread = Thread(target = recvClient, args = (client,addr,recvMsg))
    thread.start()
    
 resMsg = firstMsg[7:] + ' received before ' + secMsg[7:]
