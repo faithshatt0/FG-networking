@@ -12,13 +12,12 @@ secMsg = ""
 def recvClient(client,addr):
 	msg = client.recv(1024)
 	recvMsg = recvMsg + 1
-	if len(recvMsg) == 0: 
+	if recvMsg == 0: 
 		firstMsg = msg
 		firstClient = client
 	else:
 		secMsg = msg
 		secondClient = client
-	recvMsg[client] = msg
 	print addr, ' >> ', msg
 
 socket = socket(AF_INET, SOCK_STREAM)        # Create a socket object
