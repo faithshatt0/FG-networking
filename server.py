@@ -1,22 +1,40 @@
-import random
-from socket import *
 
-num = 0
-first = ""
-newMsg = ""
+from socket import *       
+import thread
 
-serverPort = 12000
-serverSocket = socket(AF_INET, SOCK_STREAM)
-serverSocket.bind(('', serverPort))
-serverSocket.listen(1)
-print ("**Server Ready**")
+global firstClient
+global secondClient
 
-while True:
-   connectionSocket, addr = serverSocket.accept()
-   msg = connectionSocket.recv(1024).decode()
-   if(num == 0):
-     first = msg
-   else:
-     print first[7:] + " received before " + msg[7:]
-   connectionSocket.send(newMsg.encode())
-   connectionSocket.close()
+#recvMsg = dict()
+firstMsg = ""
+secMsg = ""
+
+def recvClient(client,addr):
+	msg = client.recv(1024)
+	if len(recvMsg) == 0: 
+		firstMsg = msg
+		firstClient = client
+	else:
+		secMsg = msg
+		secondClient = client
+	recvMsg[client] = msg
+	print addr, ' >> ', msg
+
+socket = socket(AF_INET, SOCK_STREAM)        # Create a socket object
+
+print 'Server ready...'
+
+socket.bind(('', 12000))        # Bind to the port
+socket.listen(1)                 # Now wait for client connection.
+
+while len(recvMsg) < 2:
+   client, addr = socket.accept()     # Establish connection with client.
+   thread = Thread(target = recvClient, args = (client,addr))
+   thread.start()
+   
+resMsg = firstMsg[7:] + ' received before ' + secMsg[7:]
+
+firstClient.send(resMsg.encode())
+secondClient.send(resMsg.encode())
+  
+socket.close()
